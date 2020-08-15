@@ -7,6 +7,7 @@ import torch.backends.cudnn as cudnn
 import torchvision
 import torchvision.transforms as transforms
 from lenet import lenet
+import numpy as np
 
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
@@ -17,7 +18,7 @@ transform_test = transforms.Compose([
 ])
 
 testset = torchvision.datasets.ImageFolder(root='./data/testing', transform=transform_test)
-testloader = torch.utils.data.DataLoader(testset, batch_size=100, shuffle=False, num_workers=2)
+testloader = torch.utils.data.DataLoader(testset, batch_size=1, shuffle=False, num_workers=2)
 
 classes = ('0', '1', '2', '3', '4',
            '5', '6', '7', '8', '9')
@@ -27,19 +28,6 @@ print('==> Building model..')
 net = torch.load('mnist.pth', map_location='cpu')
 #net = net.module
 net = net.to(device)
-
-with open('weight.csv', 'w') as f:
-    f.close()
-
-if False:
-    for m in net._modules.values():
-        for j in m:
-            if (type(j) == nn.Conv2d) or (type(j) == nn.Linear):
-                #print(j.weight)
-                with open('weight.csv', 'a+') as f:
-                    ll = j.weight.reshape(j.weight.size(0), -1).cpu().detach().numpy().tolist()
-                    f.write(",".join(str(i) for i in ll)+'\n')
-                    f.close()
 
 if device == 'cuda':
     net = torch.nn.DataParallel(net)
@@ -59,7 +47,34 @@ def test():
             total += targets.size(0)
             correct += predicted.eq(targets).sum().item()
 
+            i = 0
+            if True:
+                for m in net._modules.values():
+                    for j in m:
+                        i = i + 1
+                        if ((type(j) == nn.Conv2d) or (type(j) == nn.Linear)) and i == 11:
+                            print(i)
+                            w5 = j.weight.cpu().detach().numpy()
+                            x4 = np.loadtxt("result.csv", delimiter=",")
+                            print(x4.dot(w5[7]))
+
+                            for i in range(x4.size):
+                                x4[i] = x4[i] * w5[7][i]
+                            with open('results.csv', 'a+') as f:
+                                f.write(",".join(str(i) for i in x4) + '\n')
+                                f.close()
+
+                            # np.savetxt("weight.csv", w5, delimiter=",")
+                            '''
+                            with open('weight.csv', 'a+') as f:
+                                ll = j.weight.reshape(j.weight.size(0), -1).cpu().detach().numpy().tolist()
+                                f.write(",".join(str(i) for i in ll)+'\n')
+                                f.close()
+                            '''
+
     acc = 100.*correct/total
     print('Acc: %.2f' %(acc))
+
+
 
 test()

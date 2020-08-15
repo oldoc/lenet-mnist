@@ -1,6 +1,6 @@
 '''LeNet in PyTorch.'''
 import torch.nn as nn
-import torch.nn.functional as F
+import numpy
 
 class lenet(nn.Module):
     def __init__(self):
@@ -42,8 +42,9 @@ class lenet(nn.Module):
         out = x3.reshape(x3.size(0), -1)
         x4 = self.fc1(out)
         x5 = self.fc2(x4)
-
-        if False:
+        if True:
+            numpy.savetxt("result.csv", x4.reshape(x4.size(0), -1).cpu().numpy(), delimiter=",")
+            '''
             with open('result.csv', 'w') as f:
                 f.write("，".join(str(i) for i in x1.reshape(x1.size(0), -1).cpu().numpy().tolist())+'\n')
                 f.write("，".join(str(i) for i in x2.reshape(x2.size(0), -1).cpu().numpy().tolist())+'\n')
@@ -51,5 +52,6 @@ class lenet(nn.Module):
                 f.write("，".join(str(i) for i in x4.reshape(x4.size(0), -1).cpu().numpy().tolist())+'\n')
                 f.write("，".join(str(i) for i in x5.reshape(x5.size(0), -1).cpu().numpy().tolist())+'\n')
                 f.close()
+            '''
         return x5
 
