@@ -18,7 +18,7 @@ transform_test = transforms.Compose([
 ])
 
 testset = torchvision.datasets.ImageFolder(root='./data/testing', transform=transform_test)
-testloader = torch.utils.data.DataLoader(testset, batch_size=1, shuffle=False, num_workers=2)
+testloader = torch.utils.data.DataLoader(testset, batch_size=1, shuffle=False, num_workers=1)
 
 classes = ('0', '1', '2', '3', '4',
            '5', '6', '7', '8', '9')
@@ -61,6 +61,7 @@ def test():
                             for i in range(x4.size):
                                 x4[i] = x4[i] * w5[7][i]
                             with open('results.csv', 'a+') as f:
+                                f.write(testset.imgs[batch_idx][0].split('/')[-1].split('.')[0]+',')
                                 f.write(",".join(str(i) for i in x4) + '\n')
                                 f.close()
 
