@@ -4,8 +4,10 @@ import shutil
 
 seven = np.loadtxt('results.csv', delimiter=',')
 
+'''
 trh = 0.2
 seven[abs(seven) < trh] = 0
+'''
 
 s = list()
 s.append(seven.shape[0])
@@ -25,6 +27,21 @@ for i in range(seven.shape[0]):
 
 np.savetxt("mask.csv", mask, delimiter=",")
 groups = list()
+
+mask_sum = np.zeros(mask.shape[1], dtype=int)
+sum = 0
+for i in range(mask.shape[0]):
+    mask_sum += mask[i]
+    sum += 1
+
+rate = 0.8
+trhd = int(sum * rate)
+col2del = list()
+
+for j in range(mask.shape[1]):
+    if abs(mask_sum[j]) > trhd or abs(mask_sum[j]) < (sum - trhd):
+        col2del.append(j)
+mask = np.delete(mask, col2del, axis=1)
 
 for i in range(mask.shape[0]):
     group = list()
