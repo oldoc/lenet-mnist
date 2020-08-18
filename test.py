@@ -56,7 +56,8 @@ def test():
                             print(i)
                             w5 = j.weight.cpu().detach().numpy()
                             x4 = np.loadtxt("result.csv", delimiter=",")
-                            print(x4.dot(w5[7]))
+                            #print(x4.dot(w5[7]))
+                            #print(x4)
 
                             for i in range(x4.size):
                                 x4[i] = x4[i] * w5[7][i]
